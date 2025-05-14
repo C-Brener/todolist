@@ -2,6 +2,7 @@ package br.com.caiquebrener.todolist.task.controller;
 
 import br.com.caiquebrener.todolist.task.model.TaskModel;
 import br.com.caiquebrener.todolist.task.repository.ITaskRepository;
+import br.com.caiquebrener.todolist.utils.ErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,30 +27,40 @@ public class TaskController {
     private ITaskRepository taskRepository;
 
     @PostMapping
-    public ResponseEntity createTask(@RequestBody TaskModel task, HttpServletRequest request) {
-        var idUser = request.getAttribute("idUser");
-        task.setIdUser((UUID) idUser);
-        var currentDate = LocalDateTime.now();
-        if (currentDate.isAfter(task.getStartAt()) || currentDate.isAfter(task.getEndAt())) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("The date is not valid");
+    public ResponseEntity<Object> createTask(@RequestBody TaskModel task, HttpServletRequest request) {
+        var idUser = getUserId(request);
+        task.setIdUser(idUser);
+        if (isInvalidDate(task)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse("Invalid date"));
         }
         if (task.getStartAt().isAfter(task.getEndAt())) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("The initial date cannot be later tha the end date");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse("The initial date cannot be later tha the end date"));
         }
         return ResponseEntity.status(HttpStatus.OK).body(taskRepository.save(task));
     }
 
     @GetMapping("get-tasks")
     public List<TaskModel> listTask(HttpServletRequest request) {
-        var idUser = request.getAttribute("idUser");
-        return taskRepository.findByIdUser((UUID) idUser);
+        var idUser = getUserId(request);
+        return taskRepository.findByIdUser(idUser);
     }
 
     @PutMapping("update/{id}")
     public TaskModel update(@RequestBody TaskModel taskModel, @PathVariable UUID id, HttpServletRequest request) {
-        var idUser = request.getAttribute("idUser");
-        taskModel.setIdUser((UUID) idUser);
+        var idUser = getUserId(request);
+        taskModel.setIdUser(idUser);
         taskModel.setId(id);
         return taskRepository.save(taskModel);
     }
+
+    private boolean isInvalidDate(TaskModel task) {
+        LocalDateTime now = LocalDateTime.now();
+        return now.isAfter(task.getStartAt()) || now.isAfter(task.getEndAt()) ||
+                task.getStartAt().isAfter(task.getEndAt());
+    }
+
+    private UUID getUserId(HttpServletRequest request) {
+        return (UUID) request.getAttribute("idUser");
+    }
+
 }
