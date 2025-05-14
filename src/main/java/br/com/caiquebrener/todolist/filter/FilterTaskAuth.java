@@ -1,7 +1,7 @@
 package br.com.caiquebrener.todolist.filter;
 
 import at.favre.lib.crypto.bcrypt.BCrypt;
-import br.com.caiquebrener.todolist.user.repository.IUserRepository;
+import br.com.caiquebrener.todolist.repository.user.IUserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

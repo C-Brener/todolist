@@ -1,8 +1,8 @@
-package br.com.caiquebrener.todolist.user.controller;
+package br.com.caiquebrener.todolist.controller.user;
 
 import at.favre.lib.crypto.bcrypt.BCrypt;
-import br.com.caiquebrener.todolist.user.model.UserModel;
-import br.com.caiquebrener.todolist.user.repository.IUserRepository;
+import br.com.caiquebrener.todolist.model.user.UserModel;
+import br.com.caiquebrener.todolist.repository.user.IUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

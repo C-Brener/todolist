@@ -1,6 +1,6 @@
-package br.com.caiquebrener.todolist.user.repository;
+package br.com.caiquebrener.todolist.repository.user;
 
-import br.com.caiquebrener.todolist.user.model.UserModel;
+import br.com.caiquebrener.todolist.model.user.UserModel;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.UUID;

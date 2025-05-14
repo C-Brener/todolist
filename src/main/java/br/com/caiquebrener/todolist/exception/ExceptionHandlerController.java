@@ -1,4 +1,4 @@
-package br.com.caiquebrener.todolist.errors;
+package br.com.caiquebrener.todolist.exception;
 
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ControllerAdvice;

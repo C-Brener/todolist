@@ -1,7 +1,7 @@
-package br.com.caiquebrener.todolist.task.controller;
+package br.com.caiquebrener.todolist.controller.task;
 
-import br.com.caiquebrener.todolist.task.model.TaskModel;
-import br.com.caiquebrener.todolist.task.repository.ITaskRepository;
+import br.com.caiquebrener.todolist.model.task.TaskModel;
+import br.com.caiquebrener.todolist.repository.task.ITaskRepository;
 import br.com.caiquebrener.todolist.utils.ErrorResponse;
 import br.com.caiquebrener.todolist.utils.BeanUtilsHelper;
 import jakarta.servlet.http.HttpServletRequest;

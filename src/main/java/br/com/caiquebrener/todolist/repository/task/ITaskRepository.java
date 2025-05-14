@@ -1,6 +1,6 @@
-package br.com.caiquebrener.todolist.task.repository;
+package br.com.caiquebrener.todolist.repository.task;
 
-import br.com.caiquebrener.todolist.task.model.TaskModel;
+import br.com.caiquebrener.todolist.model.task.TaskModel;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
