@@ -47,13 +47,15 @@ public class TaskController {
     }
 
     @PutMapping("update/{id}")
-    public TaskModel update(@RequestBody TaskModel taskModel, @PathVariable UUID id, HttpServletRequest request) {
-        var idUser = getUserId(request);
+    public ResponseEntity<Object> update(@RequestBody TaskModel taskModel, @PathVariable UUID id, HttpServletRequest request) {
         var task = taskRepository.findById(id).orElseThrow();
+        var userId = getUserId(request);
+        if (!task.getIdUser().equals(userId)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("The task cannot be updated");
+        }
         Utils.copyNonNullProperties(taskModel, task);
-        taskModel.setIdUser(idUser);
-        taskModel.setId(id);
-        return taskRepository.save(task);
+        TaskModel updatedTask = taskRepository.save(task);
+        return ResponseEntity.status(HttpStatus.OK).body(updatedTask);
     }
 
     private boolean isInvalidDate(TaskModel task) {
