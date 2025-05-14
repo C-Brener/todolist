@@ -3,7 +3,7 @@ package br.com.caiquebrener.todolist.task.controller;
 import br.com.caiquebrener.todolist.task.model.TaskModel;
 import br.com.caiquebrener.todolist.task.repository.ITaskRepository;
 import br.com.caiquebrener.todolist.utils.ErrorResponse;
-import br.com.caiquebrener.todolist.utils.Utils;
+import br.com.caiquebrener.todolist.utils.BeanUtilsHelper;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -53,7 +53,7 @@ public class TaskController {
         if (!task.getIdUser().equals(userId)) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("The task cannot be updated");
         }
-        Utils.copyNonNullProperties(taskModel, task);
+        BeanUtilsHelper.copyNonNullProperties(taskModel, task);
         TaskModel updatedTask = taskRepository.save(task);
         return ResponseEntity.status(HttpStatus.OK).body(updatedTask);
     }
