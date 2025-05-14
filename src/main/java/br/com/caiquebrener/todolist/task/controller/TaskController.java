@@ -3,6 +3,7 @@ package br.com.caiquebrener.todolist.task.controller;
 import br.com.caiquebrener.todolist.task.model.TaskModel;
 import br.com.caiquebrener.todolist.task.repository.ITaskRepository;
 import br.com.caiquebrener.todolist.utils.ErrorResponse;
+import br.com.caiquebrener.todolist.utils.Utils;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -48,9 +49,11 @@ public class TaskController {
     @PutMapping("update/{id}")
     public TaskModel update(@RequestBody TaskModel taskModel, @PathVariable UUID id, HttpServletRequest request) {
         var idUser = getUserId(request);
+        var task = taskRepository.findById(id).orElseThrow();
+        Utils.copyNonNullProperties(taskModel, task);
         taskModel.setIdUser(idUser);
         taskModel.setId(id);
-        return taskRepository.save(taskModel);
+        return taskRepository.save(task);
     }
 
     private boolean isInvalidDate(TaskModel task) {
