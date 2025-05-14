@@ -1,9 +1,7 @@
 package br.com.caiquebrener.todolist.controller.task;
 
 import br.com.caiquebrener.todolist.model.task.TaskModel;
-import br.com.caiquebrener.todolist.repository.task.ITaskRepository;
-import br.com.caiquebrener.todolist.utils.ErrorResponse;
-import br.com.caiquebrener.todolist.utils.BeanUtilsHelper;
+import br.com.caiquebrener.todolist.service.task.ITaskService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -25,47 +22,29 @@ import java.util.UUID;
 public class TaskController {
 
     @Autowired
-    private ITaskRepository taskRepository;
+    private ITaskService taskService;
 
     @PostMapping
     public ResponseEntity<Object> createTask(@RequestBody TaskModel task, HttpServletRequest request) {
-        var idUser = getUserId(request);
-        task.setIdUser(idUser);
-        if (isInvalidDate(task)) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse("Invalid date"));
-        }
-        if (task.getStartAt().isAfter(task.getEndAt())) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse("The initial date cannot be later tha the end date"));
-        }
-        return ResponseEntity.status(HttpStatus.OK).body(taskRepository.save(task));
+        UUID userId = getUserId(request);
+        TaskModel createdTask = taskService.createTask(task, userId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdTask);
     }
 
-    @GetMapping("get-tasks")
+    @GetMapping
     public List<TaskModel> listTask(HttpServletRequest request) {
-        var idUser = getUserId(request);
-        return taskRepository.findByIdUser(idUser);
+        UUID userId = getUserId(request);
+        return taskService.getTasksByUser(userId);
     }
 
-    @PutMapping("update/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<Object> update(@RequestBody TaskModel taskModel, @PathVariable UUID id, HttpServletRequest request) {
-        var task = taskRepository.findById(id).orElseThrow();
-        var userId = getUserId(request);
-        if (!task.getIdUser().equals(userId)) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("The task cannot be updated");
-        }
-        BeanUtilsHelper.copyNonNullProperties(taskModel, task);
-        TaskModel updatedTask = taskRepository.save(task);
-        return ResponseEntity.status(HttpStatus.OK).body(updatedTask);
-    }
-
-    private boolean isInvalidDate(TaskModel task) {
-        LocalDateTime now = LocalDateTime.now();
-        return now.isAfter(task.getStartAt()) || now.isAfter(task.getEndAt()) ||
-                task.getStartAt().isAfter(task.getEndAt());
+        UUID userId = getUserId(request);
+        TaskModel updatedTask = taskService.updateTask(id, taskModel, userId);
+        return ResponseEntity.ok(updatedTask);
     }
 
     private UUID getUserId(HttpServletRequest request) {
         return (UUID) request.getAttribute("idUser");
     }
-
 }
